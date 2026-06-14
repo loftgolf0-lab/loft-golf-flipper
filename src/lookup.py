@@ -13,6 +13,15 @@ load_dotenv()
 
 EBAY_APP_ID  = os.getenv("EBAY_APP_ID","")
 EBAY_CERT_ID = os.getenv("EBAY_CERT_ID","")
+
+# Also check Streamlit secrets when deployed on Streamlit Cloud
+try:
+    import streamlit as st
+    EBAY_APP_ID  = EBAY_APP_ID  or st.secrets.get("EBAY_APP_ID", "")
+    EBAY_CERT_ID = EBAY_CERT_ID or st.secrets.get("EBAY_CERT_ID", "")
+except Exception:
+    pass
+
 _token_cache: dict = {"token": None, "expires_at": 0}
 
 # ── Brand demand & sell speed data ───────────────────────────────────────────
