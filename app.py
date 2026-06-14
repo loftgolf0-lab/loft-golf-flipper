@@ -352,10 +352,20 @@ elif page == "🔍 Lookup":
 
             # Comparable sales
             with st.expander("📊 Recent sold prices"):
+                src  = result.get("data_source", "Historical data")
+                conf = result.get("confidence", "Low")
+                cnt  = result.get("comp_count", 0)
+                conf_color = {"High": "green", "Medium": "orange", "Low": "red", "Very Low": "red"}.get(conf, "red")
+                st.markdown(f"Data source: **{src}** &nbsp;|&nbsp; Confidence: :{conf_color}[{conf}] &nbsp;|&nbsp; {cnt} price points")
+                st.divider()
                 comps = result.get("comparables", [])
                 if comps:
-                    for c in comps[:8]:
-                        st.markdown(f"• ${c['price']:.0f} — {c['condition']} — {c['date']} — {c['source']}")
+                    for c in comps[:10]:
+                        if c.get("title"):
+                            st.markdown(f"• **${c['price']:.0f}** — {c['condition']} — {c['date']} — {c['source']}")
+                            st.caption(f"   {c['title'][:60]}")
+                        else:
+                            st.markdown(f"• **${c['price']:.0f}** — {c['condition']} — {c['date']} — {c['source']}")
                 else:
                     st.caption("No recent sales data found")
 
