@@ -105,10 +105,12 @@ def _fetch_ebay_comparables(brand: str, model: str, club_type: str) -> list[dict
     try:
         headers = {"Authorization": f"Bearer {token}",
                    "X-EBAY-C-MARKETPLACE-ID": "EBAY_US"}
+        # Build a more specific query to avoid accessories/parts
+        search_q = f"{brand} {model} {club_type}" if club_type else f"{brand} {model}"
         r = requests.get(
             "https://api.ebay.com/buy/browse/v1/item_summary/search",
             headers=headers,
-            params={"q": f"{brand} {model}", "category_ids": "1513",
+            params={"q": search_q, "category_ids": "1513",
                     "filter": "buyingOptions:{FIXED_PRICE}", "limit": 20,
                     "sort": "price"},
             timeout=12
@@ -120,7 +122,7 @@ def _fetch_ebay_comparables(brand: str, model: str, club_type: str) -> list[dict
                  "date":   i.get("itemCreationDate","")[:10],
                  "source": "eBay",
                  "url":    i.get("itemWebUrl","")}
-                for i in items if float(i.get("price",{}).get("value",0)) > 5]
+                for i in items if float(i.get("price",{}).get("value",0)) > 30]
     except Exception:
         return _fallback_comparables(brand, model)
 
